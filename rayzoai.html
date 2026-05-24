@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rayzoai — Stop reading reviews manually</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0A0A0A;
+    --bg-2: #111111;
+    --bg-3: #161616;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.16);
+    --accent: #1D9E75;
+    --accent-dim: rgba(29,158,117,0.15);
+    --accent-glow: rgba(29,158,117,0.3);
+    --text: #FFFFFF;
+    --text-2: rgba(255,255,255,0.6);
+    --text-3: rgba(255,255,255,0.35);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: rgba(10,10,10,0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2.5px solid white;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .logo-text {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-2);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  .nav-cta {
+    background: var(--accent) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 8px 18px !important;
+    transition: opacity 0.2s, transform 0.2s !important;
+  }
+
+  .nav-cta:hover { opacity: 0.88 !important; transform: translateY(-1px) !important; background: var(--accent) !important; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 800px;
+    height: 500px;
+    background: radial-gradient(ellipse at center, rgba(29,158,117,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid rgba(29,158,117,0.4);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-dim);
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -2.5px;
+    max-width: 820px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 24px;
+  }
+
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--text-2);
+    max-width: 540px;
+    line-height: 1.65;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 40px;
+  }
+
+  .cta-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 0 0 0 var(--accent-glow);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px var(--accent-glow);
+    opacity: 0.92;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: transparent;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .hero-hint {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-3);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── SOCIAL PROOF STRIP ─── */
+  .social-proof {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 20px 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+    flex-wrap: wrap;
+  }
+
+  .social-proof-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-3);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .social-proof-item svg { color: var(--accent); }
+
+  /* ─── SECTION BASE ─── */
+  section { position: relative; z-index: 1; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 16px; height: 1px;
+    background: var(--accent);
+  }
+
+  h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--text-2);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  /* ─── PROBLEM SECTION ─── */
+  .problem {
+    padding: 120px 0;
+  }
+
+  .problem-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .problem-left { position: sticky; top: 100px; }
+
+  .pain-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pain-card {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-2);
+    transition: border-color 0.3s, transform 0.3s, background 0.3s;
+    cursor: default;
+  }
+
+  .pain-card:hover {
+    border-color: rgba(29,158,117,0.3);
+    transform: translateX(6px);
+    background: var(--bg-3);
+  }
+
+  .pain-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 18px;
+  }
+
+  .pain-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .pain-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .pain-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(239,68,68,0.12);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  /* ─── HOW IT WORKS ─── */
+  .how {
+    padding: 120px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .how-header { text-align: center; margin-bottom: 72px; }
+  .how-header .section-sub { margin: 0 auto; }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .step {
+    background: var(--bg-2);
+    padding: 48px 36px;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .step:hover { background: var(--bg-3); }
+
+  .step-num {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .step-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(29,158,117,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .step:hover .step-icon {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+
+  .step h3 {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  .step-connector {
+    position: absolute;
+    top: 60px; right: -20px;
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    z-index: 2;
+    display: none;
+  }
+
+  /* ─── MINI DEMO WIDGET ─── */
+  .demo-widget {
+    margin: 72px auto 0;
+    max-width: 720px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-2);
+    overflow: hidden;
+  }
+
+  .demo-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-3);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .demo-url {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  .demo-body { padding: 28px; }
+
+  .demo-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .demo-cat {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    width: 140px;
+  }
+
+  .demo-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+    margin: 0 16px;
+  }
+
+  .demo-bar {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--accent);
+    animation: grow 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+    width: 0;
+  }
+
+  @keyframes grow { to { width: var(--w); } }
+
+  .demo-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    width: 40px;
+    text-align: right;
+  }
+
+  .demo-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  .tag-critical { background: rgba(239,68,68,0.15); color: #f87171; }
+  .tag-high     { background: rgba(251,146,60,0.15); color: #fb923c; }
+  .tag-medium   { background: rgba(251,191,36,0.15); color: #fbbf24; }
+
+  /* ─── CTA SECTION ─── */
+  .cta-section {
+    padding: 120px 0 140px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-bg {
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(29,158,117,0.14) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(32px, 5vw, 56px);
+    letter-spacing: -2px;
+    max-width: 640px;
+    margin: 0 auto 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-section p {
+    font-size: 17px;
+    color: var(--text-2);
+    max-width: 420px;
+    margin: 0 auto 40px;
+    position: relative;
+    z-index: 1;
+    line-height: 1.6;
+  }
+
+  .cta-section .cta-group { margin-bottom: 24px; }
+
+  .cta-fine {
+    font-size: 13px;
+    color: var(--text-3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-fine span { color: var(--accent); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+  }
+
+  .footer-left { display: flex; align-items: center; gap: 10px; }
+
+  .footer-copy {
+    font-size: 13px;
+    color: var(--text-3);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-links a {
+    font-size: 13px;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--text-2); }
+
+  /* ─── SVG ICONS ─── */
+  .icon { display: inline-block; vertical-align: middle; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .container { padding: 0 20px; }
+
+    .problem-inner {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .problem-left { position: static; }
+
+    .steps {
+      grid-template-columns: 1fr;
+    }
+
+    footer {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .cta-group { flex-direction: column; width: 100%; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+
+    .social-proof { gap: 16px; padding: 20px; }
+    .social-proof-item:nth-child(3) { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    h1 { letter-spacing: -1.5px; }
+    h2 { letter-spacing: -1px; }
+    .hero { padding: 100px 20px 60px; }
+    .problem, .how, .cta-section { padding: 80px 0; }
+  }
+
+  /* ─── HAMBURGER ─── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text-2);
+    border-radius: 2px;
+    transition: 0.2s;
+  }
+
+  @media (max-width: 768px) {
+    .hamburger { display: flex; }
+  }
+
+  /* ─── SCROLL FADE IN ─── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark"></div>
+    <span class="logo-text">Rayzoai</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#cta">Pricing</a></li>
+    <li><a href="#cta" class="nav-cta">Get started</a></li>
+  </ul>
+
+  <div class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Now in early access — join 200+ teams
+  </div>
+
+  <h1>Stop reading reviews<br>manually. Start fixing<br><em>what actually matters.</em></h1>
+
+  <p class="hero-sub">
+    Rayzoai analyzes your App Store and Google Play reviews, groups them by problem type, and tells you exactly what to fix first.
+  </p>
+
+  <div class="cta-group">
+    <a href="#cta" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1.5L14 8L8 14.5M2 8H14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Analyze your app — it's free
+    </a>
+    <a href="#how" class="btn-secondary">
+      See how it works
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7H12M7 2L12 7L7 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <p class="hero-hint">No credit card required &nbsp;·&nbsp; Works with any public app &nbsp;·&nbsp; Results in &lt; 60s</p>
+</section>
+
+<!-- ── SOCIAL PROOF ── -->
+<div class="social-proof">
+  <div class="social-proof-item">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#1D9E75" stroke-width="1.5"/><path d="M8 5v3.5l2.5 1.5" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Currently in early access
+  </div>
+  <div class="social-proof-item">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a3 3 0 100 6 3 3 0 000-6zM3 13.5a5 5 0 0110 0" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Built for indie developers
+  </div>
+  <div class="social-proof-item">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 3H3a1 1 0 00-1 1v8a1 1 0 001 1h10a1 1 0 001-1V4a1 1 0 00-1-1zM5 7h6M5 10h4" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Free to try
+  </div>
+</div>
+
+<!-- ── PROBLEM ── -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="problem-inner">
+
+      <div class="problem-left fade-in">
+        <div class="section-label">The Problem</div>
+        <h2>Review overload is killing your roadmap</h2>
+        <p class="section-sub">
+          Every week your users leave hundreds of reviews. Most teams skim a few, argue about which ones "feel important," and ship the wrong fix. You deserve better signal.
+        </p>
+      </div>
+
+      <div class="pain-cards">
+        <div class="pain-card fade-in">
+          <div class="pain-icon">⏱️</div>
+          <div class="pain-title">Hours wasted on manual reading</div>
+          <div class="pain-desc">Your PM reads 50 reviews, makes a spreadsheet, and somehow still misses the crash bug that 30% of users mention in passing.</div>
+          <span class="pain-tag">4–8 hrs / week wasted</span>
+        </div>
+
+        <div class="pain-card fade-in">
+          <div class="pain-icon">🎯</div>
+          <div class="pain-title">No signal on what actually matters</div>
+          <div class="pain-desc">A single angry 1-star review gets fixated on, while a systemic onboarding failure quietly tanks your retention.</div>
+          <span class="pain-tag">Wrong priorities</span>
+        </div>
+
+        <div class="pain-card fade-in">
+          <div class="pain-icon">📉</div>
+          <div class="pain-title">Ratings drop before you notice</div>
+          <div class="pain-desc">By the time you see the downward trend, the damage is done. Stores don't send you alerts. You find out through Twitter.</div>
+          <span class="pain-tag">No early warning</span>
+        </div>
+
+        <div class="pain-card fade-in">
+          <div class="pain-icon">🔄</div>
+          <div class="pain-title">Same issues ship every quarter</div>
+          <div class="pain-desc">Without structured data, teams keep fixing the last thing a stakeholder read, not the thing that affects the most users.</div>
+          <span class="pain-tag">Recurring failures</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="how-header fade-in">
+      <div class="section-label">How it works</div>
+      <h2>Three steps to clarity</h2>
+      <p class="section-sub">From raw reviews to a ranked action list — in under a minute. No setup, no integrations required to start.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step fade-in">
+        <div class="step-num">Step 01</div>
+        <div class="step-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V10M12 4l8 6M12 4v6h8" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Drop in your app URL</h3>
+        <p>Paste your App Store or Google Play link. Rayzoai fetches all public reviews automatically — no API keys, no developer account needed.</p>
+      </div>
+
+      <div class="step fade-in">
+        <div class="step-num">Step 02</div>
+        <div class="step-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>AI clusters by problem type</h3>
+        <p>Our model reads every review and groups them into semantic categories — crashes, UX friction, missing features, billing issues — with frequency scores.</p>
+      </div>
+
+      <div class="step fade-in">
+        <div class="step-num">Step 03</div>
+        <div class="step-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Get a ranked fix list</h3>
+        <p>Receive a prioritized report with severity scores, example quotes, and the exact issues to tackle first for maximum rating improvement.</p>
+      </div>
+    </div>
+
+    <!-- DEMO WIDGET -->
+    <div class="demo-widget fade-in">
+      <div class="demo-topbar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="demo-url">rayzoai.app/analyze/com.myapp</span>
+      </div>
+      <div class="demo-body">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:4px;">Analysis of 1,284 reviews · last 90 days</div>
+          <div style="font-size:15px;font-weight:600;">Top issues affecting your rating</div>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-cat">Login crashes <span class="demo-tag tag-critical">Critical</span></span>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="--w:74%"></div></div>
+          <span class="demo-count">342</span>
+        </div>
+        <div class="demo-row">
+          <span class="demo-cat">Slow load times <span class="demo-tag tag-high">High</span></span>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="--w:52%"></div></div>
+          <span class="demo-count">241</span>
+        </div>
+        <div class="demo-row">
+          <span class="demo-cat">Confusing UI <span class="demo-tag tag-high">High</span></span>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="--w:38%"></div></div>
+          <span class="demo-count">178</span>
+        </div>
+        <div class="demo-row">
+          <span class="demo-cat">Missing dark mode <span class="demo-tag tag-medium">Medium</span></span>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="--w:24%"></div></div>
+          <span class="demo-count">112</span>
+        </div>
+        <div class="demo-row" style="margin-bottom:0">
+          <span class="demo-cat">Notification spam <span class="demo-tag tag-medium">Medium</span></span>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="--w:16%"></div></div>
+          <span class="demo-count">74</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA SECTION ── -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg"></div>
+  <div class="container">
+    <div class="section-label" style="justify-content:center;margin-bottom:24px;">Get started</div>
+    <h2>Your next sprint should be<br><em>data-driven.</em></h2>
+    <p>Paste your app link and get a full review analysis in under a minute. Free, no signup required to try.</p>
+
+    <div class="cta-group">
+      <a href="#" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5L14 8L8 14.5M2 8H14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Analyze your app — it's free
+      </a>
+    </div>
+    <p class="cta-fine">No credit card &nbsp;·&nbsp; No account needed to start &nbsp;·&nbsp; <span>Results in &lt; 60 seconds</span></p>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">
+    <div class="logo-mark" style="width:24px;height:24px;border-radius:6px;"></div>
+    <span class="footer-copy">&copy; 2026 Rayzoai. All rights reserved.</span>
+  </div>
+  <nav class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </nav>
+</footer>
+
+<script>
+  // Scroll-triggered fade-in
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Stagger pain cards
+  document.querySelectorAll('.pain-card.fade-in').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 80}ms`;
+  });
+  document.querySelectorAll('.step.fade-in').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 100}ms`;
+  });
+
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.borderBottomColor =
+      window.scrollY > 20 ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.08)';
+  });
+</script>
+</body>
+</html>
