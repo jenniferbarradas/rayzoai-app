@@ -889,6 +889,32 @@
     line-height: 1;
   }
 
+  /* ─── LOADING STATUS ─── */
+  .analyze-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-3);
+    position: relative;
+    z-index: 1;
+    min-height: 20px;
+  }
+
+  /* ─── ERROR STATE ─── */
+  .error-box {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-2);
+  }
+
+  .error-box-icon { font-size: 36px; margin-bottom: 16px; }
+  .error-box-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .error-box-desc { font-size: 14px; line-height: 1.6; }
+  .error-box-hint { font-size: 12px; color: var(--text-3); margin-top: 10px; }
+
   @media (max-width: 600px) {
     .analyze-form { flex-direction: column; }
     .quotes { grid-template-columns: 1fr; }
@@ -1124,6 +1150,10 @@
         Analyze
       </button>
     </div>
+    <div id="analyze-status" class="analyze-status" style="display:none;">
+      <div class="badge-dot" style="flex-shrink:0;width:6px;height:6px;"></div>
+      <span id="analyze-status-text"></span>
+    </div>
     <p class="cta-fine">No credit card &nbsp;·&nbsp; No account needed &nbsp;·&nbsp; <span>Results in &lt; 60 seconds</span></p>
     <div id="results-section" style="display:none;"></div>
   </div>
@@ -1172,6 +1202,33 @@
     </svg>
     Analyze`;
 
+  const LOADING_STEPS = [
+    'Searching Google Play…',
+    'Fetching negative reviews…',
+    'Running AI analysis…',
+    'Almost done…'
+  ];
+
+  let _loadingTimer = null;
+
+  function startLoadingSteps() {
+    const wrap = document.getElementById('analyze-status');
+    const text = document.getElementById('analyze-status-text');
+    wrap.style.display = 'flex';
+    text.textContent = LOADING_STEPS[0];
+    let step = 1;
+    _loadingTimer = setInterval(() => {
+      if (step < LOADING_STEPS.length) {
+        text.textContent = LOADING_STEPS[step++];
+      }
+    }, 3500);
+  }
+
+  function stopLoadingSteps() {
+    clearInterval(_loadingTimer);
+    document.getElementById('analyze-status').style.display = 'none';
+  }
+
   async function analyzeApp() {
     const input   = document.getElementById('app-input');
     const btn     = document.getElementById('analyze-btn');
@@ -1188,50 +1245,55 @@
     btn.disabled  = true;
     btn.innerHTML = '<div class="spinner"></div> Analyzing…';
     results.style.display = 'none';
+    startLoadingSteps();
 
-    let data;
+    let data = null;
+    let isLive = false;
+    let errorMsg = null;
+
     try {
-      data = await callAnthropicAPI(appName);
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName })
+      });
+
+      const json = await res.json();
+
+      if (res.ok) {
+        data = json;
+        isLive = true;
+      } else if (res.status === 404) {
+        errorMsg = json.error || `"${appName}" wasn't found on Google Play.`;
+      } else {
+        // Server error — fall back to demo
+        data = generateDemoData(appName);
+      }
     } catch (_) {
-      await fakeDelay(1800);
+      // Network error (server not running) — fall back to demo
       data = generateDemoData(appName);
     }
 
-    renderResults(appName, data, results);
-
+    stopLoadingSteps();
     btn.disabled  = false;
     btn.innerHTML = ANALYZE_BTN_DEFAULT;
+
+    if (errorMsg) {
+      results.innerHTML = `
+        <div class="results-wrap">
+          <div class="error-box">
+            <div class="error-box-icon">🔍</div>
+            <div class="error-box-title">App Not Found</div>
+            <div class="error-box-desc">${errorMsg}</div>
+            <div class="error-box-hint">Try the exact name as shown on Google Play, e.g. "Spotify Music" or "Duolingo".</div>
+          </div>
+        </div>`;
+      results.style.display = 'block';
+    } else {
+      renderResults(appName, data, results, isLive);
+    }
+
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function fakeDelay(ms) {
-    return new Promise(res => setTimeout(res, ms));
-  }
-
-  async function callAnthropicAPI(appName) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': window.ANTHROPIC_API_KEY || '',
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 900,
-        messages: [{
-          role: 'user',
-          content: `Generate a realistic fake app-store review analysis for "${appName}". Return ONLY valid JSON, no markdown, matching this exact shape:
-{"totalReviews":<800-2500>,"categories":[{"name":"Crashes & Bugs","count":<n>,"pct":<20-45>,"tag":"Critical","tagClass":"tag-critical","quotes":["<quote1>","<quote2>"]},{"name":"UX Issues","count":<n>,"pct":<15-30>,"tag":"High","tagClass":"tag-high","quotes":["<quote1>","<quote2>"]},{"name":"Performance","count":<n>,"pct":<10-25>,"tag":"High","tagClass":"tag-high","quotes":["<quote1>","<quote2>"]},{"name":"Pricing Complaints","count":<n>,"pct":<5-18>,"tag":"Medium","tagClass":"tag-medium","quotes":["<quote1>","<quote2>"]}]}
-Make quotes sound like real frustrated users mentioning "${appName}" by name. Counts should match totalReviews × pct/100.`
-        }]
-      })
-    });
-
-    if (!res.ok) throw new Error(`API ${res.status}`);
-    const json = await res.json();
-    return JSON.parse(json.content[0].text);
   }
 
   function generateDemoData(appName) {
@@ -1248,7 +1310,7 @@ Make quotes sound like real frustrated users mentioning "${appName}" by name. Co
     const crashPool = [
       [`"${appName} crashes every time I open a new session — reinstalled twice, still broken."`,
        `"App freezes on the checkout screen. Lost my order twice because of this bug."`],
-      [`"Crashes instantly on the latest iOS update. One star until this is fixed."`,
+      [`"Crashes instantly on the latest update. One star until this is fixed."`,
        `"Randomly closes in the middle of a recording. Lost 20 minutes of work."`],
       [`"Getting a black-screen crash every morning when I launch ${appName}."`,
        `"Can't get past the login screen without a force-close. Very frustrating."`],
@@ -1291,9 +1353,35 @@ Make quotes sound like real frustrated users mentioning "${appName}" by name. Co
     };
   }
 
-  function renderResults(appName, data, container) {
-    const { totalReviews, categories } = data;
+  function renderResults(appName, data, container, isLive) {
+    const { totalReviews, categories, appTitle } = data;
+    const displayName = appTitle || appName;
+
+    if (!categories || categories.length === 0) {
+      container.innerHTML = `
+        <div class="results-wrap">
+          <div class="results-head">
+            <div>
+              <div class="results-title">Analysis for &ldquo;${displayName}&rdquo;</div>
+              <div class="results-meta">No 1–2 star reviews found in recent results</div>
+            </div>
+            <span class="demo-tag" style="background:rgba(29,158,117,0.15);color:#1D9E75;border:1px solid rgba(29,158,117,0.3);flex-shrink:0;align-self:flex-start;">Live Data</span>
+          </div>
+          <p style="color:var(--text-2);font-size:14px;padding:20px 0 4px;">Great news — no significant negative feedback found in recent reviews!</p>
+        </div>`;
+      container.style.display = 'block';
+      return;
+    }
+
     const maxPct = Math.max(...categories.map(c => c.pct));
+
+    const badgeHTML = isLive
+      ? `<span class="demo-tag" style="background:rgba(29,158,117,0.15);color:#1D9E75;border:1px solid rgba(29,158,117,0.3);flex-shrink:0;align-self:flex-start;">Live Data</span>`
+      : `<span class="demo-tag tag-medium" style="flex-shrink:0;align-self:flex-start;">Demo</span>`;
+
+    const metaText = isLive
+      ? `Based on ${totalReviews.toLocaleString()} real negative reviews &nbsp;&middot;&nbsp; Top feedback themes`
+      : `Based on ${totalReviews.toLocaleString()} simulated reviews &nbsp;&middot;&nbsp; Top negative feedback themes`;
 
     const catsHTML = categories.map(cat => `
       <div class="result-cat">
@@ -1320,10 +1408,10 @@ Make quotes sound like real frustrated users mentioning "${appName}" by name. Co
       <div class="results-wrap">
         <div class="results-head">
           <div>
-            <div class="results-title">Analysis for &ldquo;${appName}&rdquo;</div>
-            <div class="results-meta">Based on ${totalReviews.toLocaleString()} simulated reviews &nbsp;&middot;&nbsp; Top negative feedback themes</div>
+            <div class="results-title">Analysis for &ldquo;${displayName}&rdquo;</div>
+            <div class="results-meta">${metaText}</div>
           </div>
-          <span class="demo-tag tag-medium" style="flex-shrink:0;align-self:flex-start;">Demo</span>
+          ${badgeHTML}
         </div>
         ${catsHTML}
       </div>`;

@@ -1,0 +1,16 @@
+{
+  "name": "storecritic-app",
+  "version": "1.0.0",
+  "description": "Rayzoai — App review analyzer powered by AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "google-play-scraper": "^9.1.0"
+  }
+}
