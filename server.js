@@ -1,3 +1,4 @@
+console.log('Starting StoreCritic server...');
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -148,8 +149,8 @@ Use actual verbatim snippets (30–100 characters) pulled directly from the revi
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n✅ Rayzoai server → http://localhost:${PORT}\n`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n✅ Rayzoai server → http://0.0.0.0:${PORT}\n`);
   if (!process.env.ANTHROPIC_API_KEY) {
     console.warn('⚠️  ANTHROPIC_API_KEY not set — copy .env.example to .env and add your key\n');
   }
