@@ -149,9 +149,18 @@ Use actual verbatim snippets (30–100 characters) pulled directly from the revi
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n✅ Rayzoai server → http://0.0.0.0:${PORT}\n`);
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('⚠️  ANTHROPIC_API_KEY not set — copy .env.example to .env and add your key\n');
-  }
-});
+try {
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n✅ Rayzoai server → http://0.0.0.0:${PORT}\n`);
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.warn('⚠️  ANTHROPIC_API_KEY not set — copy .env.example to .env and add your key\n');
+    }
+  });
+  server.on('error', (err) => {
+    console.error('Server failed to start:', err);
+    process.exit(1);
+  });
+} catch (err) {
+  console.error('Fatal error during server startup:', err);
+  process.exit(1);
+}
