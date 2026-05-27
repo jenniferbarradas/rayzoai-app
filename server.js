@@ -1,11 +1,17 @@
 console.log('Starting StoreCritic server...');
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const gplay = require('google-play-scraper');
 const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
+app.use(cors({
+  origin: ['https://rayzoai-app.vercel.app', '*'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
