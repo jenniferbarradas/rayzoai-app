@@ -993,9 +993,70 @@
     font-weight: 600;
   }
 
+  /* ─── PRIORITY CHART ─── */
+  .priority-chart {
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    background: rgba(26,25,23,0.04);
+    border: 1px solid rgba(26,25,23,0.08);
+    border-radius: 14px;
+  }
+
+  .priority-chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(26,25,23,0.42);
+    margin-bottom: 14px;
+  }
+
+  .priority-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .priority-bar-row:last-child { margin-bottom: 0; }
+
+  .priority-bar-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(26,25,23,0.72);
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .priority-bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(26,25,23,0.08);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .priority-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    width: 0;
+    animation: grow 1s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  .priority-bar-pct {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(26,25,23,0.52);
+    width: 34px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
   @media (max-width: 600px) {
     .results-wrap { padding: 24px 20px; border-radius: 16px; }
     .result-tab { padding: 6px 12px; font-size: 12px; }
+    .priority-bar-label { width: 108px; font-size: 12px; }
+    .priority-bar-pct { width: 30px; font-size: 12px; }
   }
 </style>
 </head>
@@ -1514,6 +1575,23 @@
         ${categories.map(cat => `<button class="result-tab" onclick="switchResultTab(${JSON.stringify(cat.name)}, this)">${cat.name}</button>`).join('')}
       </div>`;
 
+    const barColorMap = { 'tag-critical': '#ef4444', 'tag-high': '#f97316', 'tag-medium': '#eab308' };
+    const chartHTML = `
+      <div class="priority-chart">
+        <div class="priority-chart-title">Issues by priority</div>
+        ${categories.map((cat, i) => {
+          const color = barColorMap[cat.tagClass] || '#1D9E75';
+          return `
+            <div class="priority-bar-row">
+              <span class="priority-bar-label">${cat.name}</span>
+              <div class="priority-bar-track">
+                <div class="priority-bar-fill" style="--w:${cat.pct}%;background:${color};animation-delay:${i * 120}ms;"></div>
+              </div>
+              <span class="priority-bar-pct">${cat.pct}%</span>
+            </div>`;
+        }).join('')}
+      </div>`;
+
     container.innerHTML = `
       <div class="results-wrap">
         <div class="results-head">
@@ -1523,6 +1601,7 @@
           </div>
           ${badgeHTML}
         </div>
+        ${chartHTML}
         ${tabsHTML}
         ${catsHTML}
       </div>`;
