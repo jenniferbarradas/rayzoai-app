@@ -915,6 +915,16 @@
   .error-box-desc { font-size: 14px; line-height: 1.6; }
   .error-box-hint { font-size: 12px; color: var(--text-3); margin-top: 10px; }
 
+  .search-hint {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin-top: -12px;
+    margin-bottom: 20px;
+  }
+
   @media (max-width: 600px) {
     .analyze-form { flex-direction: column; }
   }
@@ -1218,6 +1228,7 @@
         Analyze
       </button>
     </div>
+    <p class="search-hint">Search by app name or paste a Google Play URL</p>
     <div id="analyze-status" class="analyze-status" style="display:none;">
       <div class="badge-dot" style="flex-shrink:0;width:6px;height:6px;"></div>
       <span id="analyze-status-text"></span>
@@ -1270,24 +1281,31 @@
     </svg>
     Analyze`;
 
-  const LOADING_STEPS = [
+  const LOADING_STEPS_SEARCH = [
     'Searching Google Play…',
     'Fetching negative reviews…',
     'Running AI analysis…',
     'Almost done…'
   ];
 
+  const LOADING_STEPS_URL = [
+    'Fetching reviews…',
+    'Running AI analysis…',
+    'Almost done…'
+  ];
+
   let _loadingTimer = null;
 
-  function startLoadingSteps() {
+  function startLoadingSteps(isUrl = false) {
+    const steps = isUrl ? LOADING_STEPS_URL : LOADING_STEPS_SEARCH;
     const wrap = document.getElementById('analyze-status');
     const text = document.getElementById('analyze-status-text');
     wrap.style.display = 'flex';
-    text.textContent = LOADING_STEPS[0];
+    text.textContent = steps[0];
     let step = 1;
     _loadingTimer = setInterval(() => {
-      if (step < LOADING_STEPS.length) {
-        text.textContent = LOADING_STEPS[step++];
+      if (step < steps.length) {
+        text.textContent = steps[step++];
       }
     }, 3500);
   }
@@ -1297,33 +1315,49 @@
     document.getElementById('analyze-status').style.display = 'none';
   }
 
-  async function analyzeApp() {
-    const input   = document.getElementById('app-input');
-    const btn     = document.getElementById('analyze-btn');
-    const results = document.getElementById('results-section');
-    const appName = input.value.trim();
+  function extractPlayStoreId(raw) {
+    try {
+      const url = new URL(raw);
+      if (url.hostname === 'play.google.com') {
+        return url.searchParams.get('id') || null;
+      }
+    } catch (_) {}
+    return null;
+  }
 
-    if (!appName) {
+  async function analyzeApp() {
+    const input    = document.getElementById('app-input');
+    const btn      = document.getElementById('analyze-btn');
+    const results  = document.getElementById('results-section');
+    const rawInput = input.value.trim();
+
+    if (!rawInput) {
       input.classList.add('input-error');
       input.focus();
       setTimeout(() => input.classList.remove('input-error'), 1200);
       return;
     }
 
+    // Detect Google Play URL and extract app ID
+    const appId   = extractPlayStoreId(rawInput);
+    const appName = appId ? null : rawInput;
+    const isUrl   = !!appId;
+
     btn.disabled  = true;
     btn.innerHTML = '<div class="spinner"></div> Analyzing…';
     results.style.display = 'none';
-    startLoadingSteps();
+    startLoadingSteps(isUrl);
 
     let data = null;
     let isLive = false;
     let errorMsg = null;
 
     try {
+      const payload = isUrl ? { appId } : { appName };
       const res = await fetch('https://rayzoai-app-production.up.railway.app/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appName })
+        body: JSON.stringify(payload)
       });
 
       const json = await res.json();
@@ -1332,14 +1366,16 @@
         data = json;
         isLive = true;
       } else if (res.status === 404) {
-        errorMsg = json.error || `"${appName}" wasn't found on Google Play.`;
+        errorMsg = json.error || (isUrl
+          ? `App "${appId}" wasn't found on Google Play.`
+          : `"${appName}" wasn't found on Google Play.`);
       } else {
         // Server error — fall back to demo
-        data = generateDemoData(appName);
+        data = generateDemoData(isUrl ? appId : appName);
       }
     } catch (_) {
       // Network error (server not running) — fall back to demo
-      data = generateDemoData(appName);
+      data = generateDemoData(isUrl ? appId : appName);
     }
 
     stopLoadingSteps();
@@ -1353,12 +1389,12 @@
             <div class="error-box-icon">🔍</div>
             <div class="error-box-title">App Not Found</div>
             <div class="error-box-desc">${errorMsg}</div>
-            <div class="error-box-hint">Try the exact name as shown on Google Play, e.g. "Spotify Music" or "Duolingo".</div>
+            <div class="error-box-hint">Try the exact name as shown on Google Play, or paste a Google Play URL like https://play.google.com/store/apps/details?id=com.example.app</div>
           </div>
         </div>`;
       results.style.display = 'block';
     } else {
-      renderResults(appName, data, results, isLive);
+      renderResults(isUrl ? appId : appName, data, results, isLive);
     }
 
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -18,32 +18,46 @@ app.use(express.static(path.join(__dirname)));
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 app.post('/api/analyze', async (req, res) => {
-  const { appName } = req.body;
-  if (!appName || !appName.trim()) {
-    return res.status(400).json({ error: 'App name is required' });
+  const { appName, appId: directAppId } = req.body;
+  if (!appName?.trim() && !directAppId?.trim()) {
+    return res.status(400).json({ error: 'App name or app ID is required' });
   }
 
   try {
-    // 1. Search Google Play for the app by name
-    const searchResults = await gplay.search({
-      term: appName.trim(),
-      num: 5,
-      lang: 'en',
-      country: 'us',
-      throttle: 1
-    });
+    let appId, appTitle;
 
-    if (!searchResults || searchResults.length === 0) {
-      return res.status(404).json({ error: `No app found for "${appName}" on Google Play` });
-    }
+    if (directAppId) {
+      // Direct app ID from a pasted Google Play URL — skip search
+      appId = directAppId.trim();
+      try {
+        const details = await gplay.app({ appId, lang: 'en', country: 'us' });
+        appTitle = details.title;
+      } catch (_) {
+        appTitle = appId;
+      }
+      console.log(`Direct ID: ${appTitle} (${appId})`);
+    } else {
+      // 1. Search Google Play for the app by name
+      const searchResults = await gplay.search({
+        term: appName.trim(),
+        num: 5,
+        lang: 'en',
+        country: 'us',
+        throttle: 1
+      });
 
-    const appInfo = searchResults[0];
-    // appId is embedded in the URL, not a top-level field in this scraper version
-    const appId = appInfo.appId || new URL(appInfo.url).searchParams.get('id');
-    if (!appId) {
-      return res.status(404).json({ error: `Could not resolve app ID for "${appName}"` });
+      if (!searchResults || searchResults.length === 0) {
+        return res.status(404).json({ error: `No app found for "${appName}" on Google Play` });
+      }
+
+      const appInfo = searchResults[0];
+      appId = appInfo.appId || new URL(appInfo.url).searchParams.get('id');
+      appTitle = appInfo.title;
+      if (!appId) {
+        return res.status(404).json({ error: `Could not resolve app ID for "${appName}"` });
+      }
+      console.log(`Found: ${appTitle} (${appId})`);
     }
-    console.log(`Found: ${appInfo.title} (${appId})`);
 
     // 2. Fetch recent reviews and filter to 1–2 stars
     const reviewResult = await gplay.reviews({
@@ -65,7 +79,7 @@ app.post('/api/analyze', async (req, res) => {
     if (negativeReviews.length === 0) {
       return res.json({
         isLive: true,
-        appTitle: appInfo.title,
+        appTitle,
         totalReviews: 0,
         categories: []
       });
@@ -77,7 +91,7 @@ app.post('/api/analyze', async (req, res) => {
       .map((r, i) => `[${i + 1}] (${r.score}★) ${r.text}`)
       .join('\n\n');
 
-    const prompt = `Analyze these ${negativeReviews.length} negative Google Play reviews for "${appInfo.title}" and categorize them into exactly 4 groups:
+    const prompt = `Analyze these ${negativeReviews.length} negative Google Play reviews for "${appTitle}" and categorize them into exactly 4 groups:
 
 1. Crashes & Bugs — app crashes, freezes, errors, force closes, black screens
 2. UX Issues — confusing navigation, bad design, poor usability, missing features
@@ -141,14 +155,15 @@ Use actual verbatim snippets (30–100 characters) pulled directly from the revi
 
     const data = JSON.parse(text);
     data.isLive = true;
-    data.appTitle = appInfo.title;
+    data.appTitle = appTitle;
 
     res.json(data);
 
   } catch (err) {
     console.error('Error:', err.message);
     if (err.message && err.message.toLowerCase().includes('not found')) {
-      return res.status(404).json({ error: `App "${appName}" not found on Google Play` });
+      const label = directAppId || appName;
+      return res.status(404).json({ error: `App "${label}" not found on Google Play` });
     }
     res.status(500).json({ error: 'Analysis failed. Please try again.' });
   }
