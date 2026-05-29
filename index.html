@@ -1041,6 +1041,23 @@
     flex-shrink: 0;
   }
 
+  /* ─── RESULT CATEGORIES GRID ─── */
+  .result-cats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .result-cats-grid .result-cat {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 680px) {
+    .result-cats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 600px) {
     .results-wrap { padding: 24px 20px; border-radius: 16px; }
     .result-tab { padding: 6px 12px; font-size: 12px; }
@@ -1561,7 +1578,7 @@
     const tabsHTML = `
       <div class="result-tabs">
         <button class="result-tab active" onclick="switchResultTab('All', this)">All</button>
-        ${categories.map(cat => `<button class="result-tab" onclick="switchResultTab(${JSON.stringify(cat.name)}, this)">${cat.name}</button>`).join('')}
+        ${categories.map(cat => `<button class="result-tab" onclick="switchResultTab('${cat.name}', this)">${cat.name}</button>`).join('')}
       </div>`;
 
     const barColorMap = { 'tag-critical': '#ef4444', 'tag-high': '#f97316', 'tag-medium': '#eab308' };
@@ -1592,7 +1609,9 @@
         </div>
         ${chartHTML}
         ${tabsHTML}
-        ${catsHTML}
+        <div class="result-cats-grid">
+          ${catsHTML}
+        </div>
       </div>`;
 
     container.style.display = 'block';
@@ -1608,7 +1627,7 @@
     setTimeout(() => {
       cats.forEach(cat => {
         const show = tabName === 'All' || cat.dataset.category === tabName;
-        cat.style.display = show ? 'block' : 'none';
+        cat.style.display = show ? '' : 'none';
       });
       requestAnimationFrame(() => {
         cats.forEach(cat => {
