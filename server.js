@@ -18,10 +18,12 @@ app.use(express.static(path.join(__dirname)));
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 app.post('/api/analyze', async (req, res) => {
-  const { appName, appId: directAppId } = req.body;
+  const { appName, appId: directAppId, timeRange } = req.body;
   if (!appName?.trim() && !directAppId?.trim()) {
     return res.status(400).json({ error: 'App name or app ID is required' });
   }
+
+  const reviewCount = timeRange === '2w' ? 50 : timeRange === '3m' ? 200 : 100;
 
   try {
     let appId, appTitle;
@@ -63,7 +65,7 @@ app.post('/api/analyze', async (req, res) => {
     const reviewResult = await gplay.reviews({
       appId,
       sort: gplay.sort.NEWEST,
-      num: 200,
+      num: reviewCount,
       lang: 'en',
       country: 'us',
       throttle: 1
