@@ -1161,6 +1161,42 @@
     .filter-row { flex-wrap: wrap; }
     .time-select { flex: 1; }
   }
+
+  /* ─── HERO TWO-COLUMN ─── */
+  .hero-cols {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero-col-left {
+    flex: 1;
+    text-align: left;
+  }
+
+  .hero-col-left h1 { max-width: 100%; }
+
+  .hero-col-left .cta-group { justify-content: flex-start; }
+
+  .hero-col-left .hero-hint { text-align: left; }
+
+  .hero-col-right {
+    flex: 1;
+    min-width: 420px;
+  }
+
+  @media (max-width: 768px) {
+    .hero-cols { flex-direction: column; gap: 40px; }
+    .hero-col-left { text-align: center; }
+    .hero-col-left .cta-group { justify-content: center; }
+    .hero-col-left .hero-hint { text-align: center; }
+    .hero-col-right { min-width: 0; width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -1189,80 +1225,95 @@
   <div class="hero-glow"></div>
   <div class="hero-grid"></div>
 
-  <div class="badge">
-    <span class="badge-dot"></span>
-    Now in early access · Free to try · No signup needed
-  </div>
+  <div class="hero-cols">
 
-  <h1>Stop guessing. Start fixing<br><em>what actually breaks your app.</em></h1>
+    <!-- Left column: text + CTAs -->
+    <div class="hero-col-left">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Now in early access · Free to try · No signup needed
+      </div>
 
-  <p class="hero-sub">
-    Rayzoai reads your Google Play reviews, finds the patterns users complain about most, and tells you exactly what to fix first — before churn compounds.
-  </p>
+      <h1>Stop guessing. Start fixing<br><em>what actually breaks your app.</em></h1>
 
-  <div style="margin: 40px auto; max-width: 680px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; z-index: 1;">
-    <div style="background: #e8e8e8; padding: 12px 16px; display: flex; align-items: center; gap: 8px;">
-      <span style="width:12px;height:12px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
-      <span style="width:12px;height:12px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>
-      <span style="width:12px;height:12px;border-radius:50%;background:#28c840;display:inline-block;"></span>
-      <span style="margin-left:8px;font-size:12px;color:#666;">rayzoai.com/analyze/com.duolingo</span>
+      <p class="hero-sub">
+        Rayzoai reads your Google Play reviews, finds the patterns users complain about most, and tells you exactly what to fix first — before churn compounds.
+      </p>
+
+      <p style="color: white; font-size: 18px; font-weight: 600; margin: 16px 0;">🔍 Works for your app — or any competitor's.</p>
+
+      <div class="cta-group">
+        <a href="#cta" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1.5L14 8L8 14.5M2 8H14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Analyze your app — it's free
+        </a>
+        <a href="#how" class="btn-secondary">
+          See how it works
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7H12M7 2L12 7L7 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <p class="hero-hint">No credit card required &nbsp;·&nbsp; Works with any public app &nbsp;·&nbsp; Results in &lt; 60s</p>
     </div>
-    <div style="background: white; padding: 24px;">
-      <p style="color:#666;font-size:13px;margin:0 0 4px;">Analysis of Duolingo · 2,847 reviews · last 30 days</p>
-      <p style="font-weight:700;font-size:16px;margin:0 0 20px;color:#111;">Top issues affecting your rating</p>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:160px;font-size:14px;color:#111;">Login crashes</span>
-          <span style="background:#fee2e2;color:#dc2626;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Critical</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:90%;background:#10b981;height:8px;border-radius:4px;"></div></div>
-          <span style="font-size:13px;color:#666;min-width:40px;">423</span>
+
+    <!-- Right column: phone frame + browser mockup -->
+    <div class="hero-col-right">
+      <div style="background:#1a1a1a; border-radius:36px; padding:12px; box-shadow:0 30px 80px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:center; margin-bottom:8px;">
+          <div style="width:60px; height:6px; background:black; border-radius:3px;"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:160px;font-size:14px;color:#111;">Audio not working</span>
-          <span style="background:#ffedd5;color:#ea580c;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">High</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:68%;background:#10b981;height:8px;border-radius:4px;"></div></div>
-          <span style="font-size:13px;color:#666;min-width:40px;">287</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:160px;font-size:14px;color:#111;">Streak reset bug</span>
-          <span style="background:#ffedd5;color:#ea580c;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">High</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:47%;background:#10b981;height:8px;border-radius:4px;"></div></div>
-          <span style="font-size:13px;color:#666;min-width:40px;">198</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:160px;font-size:14px;color:#111;">Ads too frequent</span>
-          <span style="background:#fef9c3;color:#ca8a04;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Medium</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:37%;background:#10b981;height:8px;border-radius:4px;"></div></div>
-          <span style="font-size:13px;color:#666;min-width:40px;">156</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:160px;font-size:14px;color:#111;">Slow loading</span>
-          <span style="background:#fef9c3;color:#ca8a04;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Medium</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:21%;background:#10b981;height:8px;border-radius:4px;"></div></div>
-          <span style="font-size:13px;color:#666;min-width:40px;">89</span>
+        <div style="border-radius:24px; overflow:hidden;">
+          <div style="background:#e8e8e8; padding:12px 16px; display:flex; align-items:center; gap:8px;">
+            <span style="width:12px;height:12px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#28c840;display:inline-block;"></span>
+            <span style="margin-left:8px;font-size:12px;color:#666;">rayzoai.com/analyze/com.duolingo</span>
+          </div>
+          <div style="background:white; padding:24px;">
+            <p style="color:#666;font-size:13px;margin:0 0 4px;">Analysis of Duolingo · 2,847 reviews · last 30 days</p>
+            <p style="font-weight:700;font-size:16px;margin:0 0 20px;color:#111;">Top issues affecting your rating</p>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="min-width:120px;font-size:13px;color:#111;">Login crashes</span>
+                <span style="background:#fee2e2;color:#dc2626;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">Critical</span>
+                <div style="flex:1;min-width:80px;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:90%;background:#10b981;height:8px;border-radius:4px;"></div></div>
+                <span style="font-size:13px;color:#666;min-width:36px;text-align:right;">423</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="min-width:120px;font-size:13px;color:#111;">Audio not working</span>
+                <span style="background:#ffedd5;color:#ea580c;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">High</span>
+                <div style="flex:1;min-width:80px;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:68%;background:#10b981;height:8px;border-radius:4px;"></div></div>
+                <span style="font-size:13px;color:#666;min-width:36px;text-align:right;">287</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="min-width:120px;font-size:13px;color:#111;">Streak reset bug</span>
+                <span style="background:#ffedd5;color:#ea580c;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">High</span>
+                <div style="flex:1;min-width:80px;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:47%;background:#10b981;height:8px;border-radius:4px;"></div></div>
+                <span style="font-size:13px;color:#666;min-width:36px;text-align:right;">198</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="min-width:120px;font-size:13px;color:#111;">Ads too frequent</span>
+                <span style="background:#fef9c3;color:#ca8a04;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">Medium</span>
+                <div style="flex:1;min-width:80px;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:37%;background:#10b981;height:8px;border-radius:4px;"></div></div>
+                <span style="font-size:13px;color:#666;min-width:36px;text-align:right;">156</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="min-width:120px;font-size:13px;color:#111;">Slow loading</span>
+                <span style="background:#fef9c3;color:#ca8a04;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">Medium</span>
+                <div style="flex:1;min-width:80px;background:#f0f0f0;border-radius:4px;height:8px;"><div style="width:21%;background:#10b981;height:8px;border-radius:4px;"></div></div>
+                <span style="font-size:13px;color:#666;min-width:36px;text-align:right;">89</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
-
-  <p style="color: white; font-size: 18px; font-weight: 600; margin: 16px 0;">🔍 Works for your app — or any competitor's.</p>
-
-  <div class="cta-group">
-    <a href="#cta" class="btn-primary">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M8 1.5L14 8L8 14.5M2 8H14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Analyze your app — it's free
-    </a>
-    <a href="#how" class="btn-secondary">
-      See how it works
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 7H12M7 2L12 7L7 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
-  </div>
-
-  <p class="hero-hint">No credit card required &nbsp;·&nbsp; Works with any public app &nbsp;·&nbsp; Results in &lt; 60s</p>
 </section>
 
 <!-- ── SOCIAL PROOF ── -->
