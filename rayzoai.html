@@ -735,6 +735,142 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  /* ─── HERO TAGLINE ─── */
+  .hero-tagline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 36px;
+  }
+
+  /* ─── HERO DEMO MOCKUP ─── */
+  .hero-demo {
+    position: relative;
+    z-index: 1;
+    margin-top: 52px;
+    max-width: 780px;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .hero-demo-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: #e8e8e8;
+    border-bottom: 1px solid #d0d0d0;
+  }
+
+  .hero-demo-url {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .hero-demo-body {
+    background: #ffffff;
+    padding: 32px 36px;
+  }
+
+  .hero-demo-meta {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .hero-demo-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 28px;
+    letter-spacing: -0.3px;
+  }
+
+  .hero-demo-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .hero-demo-row:last-child { margin-bottom: 0; }
+
+  .hero-demo-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .hero-demo-issue {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+  }
+
+  .hero-demo-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .hbadge-critical { background: #fee2e2; color: #dc2626; }
+  .hbadge-high     { background: #ffedd5; color: #ea580c; }
+  .hbadge-medium   { background: #fef9c3; color: #a16207; }
+
+  .hero-demo-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .hero-demo-bar {
+    height: 100%;
+    border-radius: 100px;
+    background: #10b981;
+    animation: grow 1.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    width: 0;
+  }
+
+  .hero-demo-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    width: 48px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-demo-body { padding: 24px 20px; }
+    .hero-demo-label { width: 160px; }
+    .hero-demo-issue { font-size: 12px; }
+    .hero-tagline { font-size: 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-demo-label { width: 130px; }
+  }
 </style>
 </head>
 <body>
@@ -774,6 +910,10 @@
     Rayzoai analyzes your App Store and Google Play reviews, groups them by problem type, and tells you exactly what to fix first.
   </p>
 
+  <div class="hero-tagline">
+    🔍 Works for your app — or any competitor's.
+  </div>
+
   <div class="cta-group">
     <a href="#cta" class="btn-primary">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -790,6 +930,60 @@
   </div>
 
   <p class="hero-hint">No credit card required &nbsp;·&nbsp; Works with any public app &nbsp;·&nbsp; Results in &lt; 60s</p>
+
+  <div class="hero-demo fade-in">
+    <div class="hero-demo-topbar">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      <span class="hero-demo-url">rayzoai.app/analyze/com.duolingo</span>
+    </div>
+    <div class="hero-demo-body">
+      <div class="hero-demo-meta">Analysis of Duolingo &nbsp;·&nbsp; 2,847 reviews &nbsp;·&nbsp; last 30 days</div>
+      <div class="hero-demo-title">Top issues affecting your rating</div>
+
+      <div class="hero-demo-row">
+        <div class="hero-demo-label">
+          <span class="hero-demo-issue">Login crashes</span>
+          <span class="hero-demo-badge hbadge-critical">Critical</span>
+        </div>
+        <div class="hero-demo-bar-wrap"><div class="hero-demo-bar" style="--w:88%"></div></div>
+        <span class="hero-demo-count">423</span>
+      </div>
+      <div class="hero-demo-row">
+        <div class="hero-demo-label">
+          <span class="hero-demo-issue">Audio not working</span>
+          <span class="hero-demo-badge hbadge-high">High</span>
+        </div>
+        <div class="hero-demo-bar-wrap"><div class="hero-demo-bar" style="--w:60%"></div></div>
+        <span class="hero-demo-count">287</span>
+      </div>
+      <div class="hero-demo-row">
+        <div class="hero-demo-label">
+          <span class="hero-demo-issue">Streak reset bug</span>
+          <span class="hero-demo-badge hbadge-high">High</span>
+        </div>
+        <div class="hero-demo-bar-wrap"><div class="hero-demo-bar" style="--w:42%"></div></div>
+        <span class="hero-demo-count">198</span>
+      </div>
+      <div class="hero-demo-row">
+        <div class="hero-demo-label">
+          <span class="hero-demo-issue">Ads too frequent</span>
+          <span class="hero-demo-badge hbadge-medium">Medium</span>
+        </div>
+        <div class="hero-demo-bar-wrap"><div class="hero-demo-bar" style="--w:32%"></div></div>
+        <span class="hero-demo-count">156</span>
+      </div>
+      <div class="hero-demo-row">
+        <div class="hero-demo-label">
+          <span class="hero-demo-issue">Slow loading</span>
+          <span class="hero-demo-badge hbadge-medium">Medium</span>
+        </div>
+        <div class="hero-demo-bar-wrap"><div class="hero-demo-bar" style="--w:18%"></div></div>
+        <span class="hero-demo-count">89</span>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ── SOCIAL PROOF ── -->
@@ -948,7 +1142,7 @@
   <div class="cta-bg"></div>
   <div class="container">
     <div class="section-label" style="justify-content:center;margin-bottom:24px;">Get started</div>
-    <h2>Your next sprint should be<br><em>data-driven.</em></h2>
+    <h2>Paste any app URL. Get your<br><em>fix list in 60 seconds.</em></h2>
     <p>Paste your app link and get a full review analysis in under a minute. Free, no signup required to try.</p>
 
     <div class="cta-group">
