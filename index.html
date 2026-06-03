@@ -1644,15 +1644,21 @@
 
     let data = null;
     let isLive = false;
-    let errorMsg = null;
+    let fatalError = false;
+    let demoNotice = false;
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const payload = isUrl ? { appId, timeRange } : { appName, timeRange };
       const res = await fetch('https://rayzoai-app-production.up.railway.app/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       const json = await res.json();
 
@@ -1660,35 +1666,34 @@
         data = json;
         isLive = true;
       } else if (res.status === 404) {
-        errorMsg = json.error || (isUrl
-          ? `App "${appId}" wasn't found on Google Play.`
-          : `"${appName}" wasn't found on Google Play.`);
-      } else {
-        // Server error — fall back to demo
         data = generateDemoData(isUrl ? appId : appName);
+        demoNotice = true;
+      } else {
+        fatalError = true;
       }
     } catch (_) {
-      // Network error (server not running) — fall back to demo
-      data = generateDemoData(isUrl ? appId : appName);
+      fatalError = true;
     }
 
     stopLoadingSteps();
     btn.disabled  = false;
     btn.innerHTML = ANALYZE_BTN_DEFAULT;
 
-    if (errorMsg) {
+    if (fatalError) {
       results.innerHTML = `
         <div class="results-wrap">
           <div class="error-box">
-            <div class="error-box-icon">🔍</div>
-            <div class="error-box-title">App Not Found</div>
-            <div class="error-box-desc">${errorMsg}</div>
-            <div class="error-box-hint">Try the exact name as shown on Google Play, or paste a Google Play URL like https://play.google.com/store/apps/details?id=com.example.app</div>
+            <div class="error-box-icon">⏳</div>
+            <div class="error-box-title">Analysis temporarily unavailable</div>
+            <div class="error-box-desc">Our server is warming up. Please try again in 30 seconds.</div>
+            <div style="margin-top:20px;">
+              <button class="btn-primary" onclick="analyzeApp()">Try Again</button>
+            </div>
           </div>
         </div>`;
       results.style.display = 'block';
     } else {
-      renderResults(isUrl ? appId : appName, data, results, isLive);
+      renderResults(isUrl ? appId : appName, data, results, isLive, demoNotice);
     }
 
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1751,7 +1756,7 @@
     };
   }
 
-  function renderResults(appName, data, container, isLive) {
+  function renderResults(appName, data, container, isLive, demoNotice = false) {
     const { totalReviews, categories, appTitle } = data;
     const displayName = appTitle || appName;
 
@@ -1825,6 +1830,10 @@
         }).join('')}
       </div>`;
 
+    const noticeHTML = demoNotice
+      ? `<div style="margin-bottom:20px;padding:10px 14px;background:rgba(202,138,4,0.08);border:1px solid rgba(202,138,4,0.20);border-radius:10px;font-size:13px;color:#a16207;">⚠️ Showing example data — enter a real app URL for live results.</div>`
+      : '';
+
     container.innerHTML = `
       <div class="results-wrap">
         <div class="results-head">
@@ -1834,6 +1843,7 @@
           </div>
           ${badgeHTML}
         </div>
+        ${noticeHTML}
         ${chartHTML}
         ${tabsHTML}
         <div class="result-cats-grid">
