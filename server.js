@@ -8,7 +8,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 app.use(cors({
-  origin: ['https://rayzoai-app.vercel.app', '*'],
+  origin: ['https://rayzoai-app.vercel.app', 'https://rayzoai.com', 'https://www.rayzoai.com'],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
