@@ -103,6 +103,20 @@ app.post('/api/analyze', async (req, res) => {
 Reviews:
 ${reviewsText}
 
+For each category, assign:
+
+tag / tagClass based on pct (percentage of totalReviews):
+- pct >= 25 → tag: "Critical", tagClass: "tag-critical"
+- pct >= 10 → tag: "High",     tagClass: "tag-high"
+- pct < 10  → tag: "Medium",   tagClass: "tag-medium"
+
+revenueImpact based on the type of issue:
+- High:   issues that cause users to uninstall or leave 1-star reviews (crashes, login failures, data loss)
+- Medium: issues that cause frustration but not immediate churn (slow performance, confusing UX)
+- Low:    nice-to-have complaints that rarely cause churn (missing features, minor UI preferences)
+
+revenueReason: one sentence explaining why this category impacts revenue.
+
 Return ONLY valid JSON with no markdown or explanation:
 {
   "totalReviews": ${negativeReviews.length},
@@ -111,32 +125,40 @@ Return ONLY valid JSON with no markdown or explanation:
       "name": "Crashes & Bugs",
       "count": <integer: reviews in this category>,
       "pct": <integer: percentage of totalReviews>,
-      "tag": "Critical",
-      "tagClass": "tag-critical",
+      "tag": <"Critical", "High", or "Medium" based on pct rules above>,
+      "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
+      "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
+      "revenueReason": "<one sentence explaining why this impacts revenue>",
       "quotes": ["<verbatim snippet from a real review>", "<another verbatim snippet>"]
     },
     {
       "name": "UX Issues",
       "count": <integer>,
       "pct": <integer>,
-      "tag": "High",
-      "tagClass": "tag-high",
+      "tag": <"Critical", "High", or "Medium" based on pct rules above>,
+      "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
+      "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
+      "revenueReason": "<one sentence explaining why this impacts revenue>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     },
     {
       "name": "Performance",
       "count": <integer>,
       "pct": <integer>,
-      "tag": "High",
-      "tagClass": "tag-high",
+      "tag": <"Critical", "High", or "Medium" based on pct rules above>,
+      "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
+      "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
+      "revenueReason": "<one sentence explaining why this impacts revenue>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     },
     {
       "name": "Pricing Complaints",
       "count": <integer>,
       "pct": <integer>,
-      "tag": "Medium",
-      "tagClass": "tag-medium",
+      "tag": <"Critical", "High", or "Medium" based on pct rules above>,
+      "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
+      "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
+      "revenueReason": "<one sentence explaining why this impacts revenue>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     }
   ]
