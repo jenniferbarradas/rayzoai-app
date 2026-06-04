@@ -584,6 +584,14 @@
   .tag-high     { background: rgba(234,88,12,0.10); color: #ea580c; }
   .tag-medium   { background: rgba(202,138,4,0.10);  color: #a16207; }
 
+  .revenue-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .revenue-label { font-size: 12px; color: var(--text-3); white-space: nowrap; }
+  .revenue-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .revenue-badge-high   { background: #fee2e2; color: #dc2626; }
+  .revenue-badge-medium { background: #ffedd5; color: #ea580c; }
+  .revenue-badge-low    { background: #f3f4f6; color: #6b7280; }
+  .revenue-reason { font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px; line-height: 1.5; }
+
   /* ─── CTA SECTION ─── */
   .cta-section {
     padding: 120px 0 140px;
@@ -1786,6 +1794,12 @@
       ? `Based on ${totalReviews.toLocaleString()} real negative reviews &nbsp;&middot;&nbsp; Top feedback themes`
       : `Based on ${totalReviews.toLocaleString()} simulated reviews &nbsp;&middot;&nbsp; Top negative feedback themes`;
 
+    const revenueImpactBadge = level => {
+      if (!level) return '';
+      const cls = { High: 'revenue-badge-high', Medium: 'revenue-badge-medium', Low: 'revenue-badge-low' }[level] || 'revenue-badge-low';
+      return `<span class="revenue-badge ${cls}">${level}</span>`;
+    };
+
     const catsHTML = categories.map(cat => `
       <div class="result-cat" data-category="${cat.name}">
         <div class="result-cat-top">
@@ -1798,6 +1812,13 @@
             <div class="result-pct">${cat.pct}% of reviews</div>
           </div>
         </div>
+        ${cat.revenueImpact ? `
+        <div class="revenue-row">
+          <span class="revenue-label">Revenue impact:</span>
+          ${revenueImpactBadge(cat.revenueImpact)}
+        </div>
+        ${cat.revenueReason ? `<p class="revenue-reason">${cat.revenueReason}</p>` : ''}
+        ` : ''}
         <div class="result-bar-track">
           <div class="result-bar-fill" style="--w:${Math.round(cat.pct / maxPct * 90)}%"></div>
         </div>
