@@ -23,7 +23,7 @@ app.post('/api/analyze', async (req, res) => {
     return res.status(400).json({ error: 'App name or app ID is required' });
   }
 
-  const reviewCount = timeRange === '2w' ? 50 : timeRange === '3m' ? 200 : 100;
+  const reviewCount = timeRange === '2w' ? 200 : timeRange === '3m' ? 500 : 300;
 
   try {
     let appId, appTitle;
