@@ -117,6 +117,8 @@ revenueImpact based on the type of issue:
 
 revenueReason: one sentence explaining why this category impacts revenue.
 
+recommendation: 2-3 concrete, actionable sentences telling the developer exactly what to fix, specific to the actual patterns found in these reviews (not generic advice).
+
 Return ONLY valid JSON with no markdown or explanation:
 {
   "totalReviews": ${negativeReviews.length},
@@ -129,6 +131,7 @@ Return ONLY valid JSON with no markdown or explanation:
       "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
       "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
       "revenueReason": "<one sentence explaining why this impacts revenue>",
+      "recommendation": "<2-3 concrete actionable sentences specific to the crash patterns found>",
       "quotes": ["<verbatim snippet from a real review>", "<another verbatim snippet>"]
     },
     {
@@ -139,6 +142,7 @@ Return ONLY valid JSON with no markdown or explanation:
       "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
       "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
       "revenueReason": "<one sentence explaining why this impacts revenue>",
+      "recommendation": "<2-3 concrete actionable sentences specific to the UX issues found>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     },
     {
@@ -149,6 +153,7 @@ Return ONLY valid JSON with no markdown or explanation:
       "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
       "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
       "revenueReason": "<one sentence explaining why this impacts revenue>",
+      "recommendation": "<2-3 concrete actionable sentences specific to the performance issues found>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     },
     {
@@ -159,6 +164,7 @@ Return ONLY valid JSON with no markdown or explanation:
       "tagClass": <"tag-critical", "tag-high", or "tag-medium" based on pct rules above>,
       "revenueImpact": <"High", "Medium", or "Low" based on revenueImpact rules above>,
       "revenueReason": "<one sentence explaining why this impacts revenue>",
+      "recommendation": "<2-3 concrete actionable sentences specific to the pricing complaints found>",
       "quotes": ["<verbatim snippet>", "<verbatim snippet>"]
     }
   ]
@@ -169,7 +175,7 @@ Use actual verbatim snippets (30–100 characters) pulled directly from the revi
     // 4. Ask Claude to categorize the real reviews
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
+      max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
 

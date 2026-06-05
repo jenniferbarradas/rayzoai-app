@@ -1171,6 +1171,61 @@
     .time-select { flex: 1; }
   }
 
+  /* ─── ACTION PLAN ─── */
+  .action-plan {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .action-plan-header {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .action-plan-item {
+    background: #FFFFFF;
+    border-radius: var(--radius);
+    border-left: 4px solid #10b981;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+
+  .action-plan-item:last-child { margin-bottom: 0; }
+
+  .action-plan-item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .action-plan-cat-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .action-plan-fix-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #10b981;
+    margin-bottom: 6px;
+  }
+
+  .action-plan-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.65;
+    margin: 0;
+  }
+
   /* ─── HERO TWO-COLUMN ─── */
   .hero-cols {
     display: flex;
@@ -1856,6 +1911,20 @@
       ? `<div style="margin-bottom:20px;padding:10px 14px;background:rgba(202,138,4,0.08);border:1px solid rgba(202,138,4,0.20);border-radius:10px;font-size:13px;color:#a16207;">⚠️ Showing example data — enter a real app URL for live results.</div>`
       : '';
 
+    const actionPlanHTML = isLive && categories.some(c => c.recommendation) ? `
+      <div class="action-plan">
+        <div class="action-plan-header">🎯 Your Action Plan</div>
+        ${categories.filter(c => c.recommendation).map(cat => `
+          <div class="action-plan-item">
+            <div class="action-plan-item-top">
+              <span class="action-plan-cat-name">${cat.name}</span>
+              <span class="demo-tag ${cat.tagClass}">${cat.tag}</span>
+            </div>
+            <div class="action-plan-fix-label">Recommended Fix</div>
+            <p class="action-plan-text">${cat.recommendation}</p>
+          </div>`).join('')}
+      </div>` : '';
+
     container.innerHTML = `
       <div class="results-wrap">
         <div class="results-head">
@@ -1871,6 +1940,7 @@
         <div class="result-cats-grid">
           ${catsHTML}
         </div>
+        ${actionPlanHTML}
       </div>`;
 
     container.style.display = 'block';
