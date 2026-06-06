@@ -1710,10 +1710,11 @@
     let isLive = false;
     let fatalError = false;
     let demoNotice = false;
+    let errorMessage = 'Our server is warming up. Please try again in 30 seconds.';
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const payload = isUrl ? { appId, timeRange } : { appName, timeRange };
       const res = await fetch('https://rayzoai-app-production.up.railway.app/api/analyze', {
@@ -1724,10 +1725,8 @@
       });
       clearTimeout(timeoutId);
 
-      const json = await res.json();
-
       if (res.ok) {
-        data = json;
+        data = await res.json();
         isLive = true;
       } else if (res.status === 404) {
         data = generateDemoData(isUrl ? appId : appName);
@@ -1735,8 +1734,9 @@
       } else {
         fatalError = true;
       }
-    } catch (_) {
+    } catch (err) {
       fatalError = true;
+      if (err.name === 'AbortError') errorMessage = 'Request timed out. Please try again — the server may be warming up.';
     }
 
     stopLoadingSteps();
@@ -1749,7 +1749,7 @@
           <div class="error-box">
             <div class="error-box-icon">⏳</div>
             <div class="error-box-title">Analysis temporarily unavailable</div>
-            <div class="error-box-desc">Our server is warming up. Please try again in 30 seconds.</div>
+            <div class="error-box-desc">${errorMessage}</div>
             <div style="margin-top:20px;">
               <button class="btn-primary" onclick="analyzeApp()">Try Again</button>
             </div>
@@ -1879,7 +1879,7 @@
           <div class="result-bar-fill" style="--w:${Math.round(cat.pct / maxPct * 90)}%"></div>
         </div>
         <div class="quotes">
-          ${cat.quotes.map(q => `<div class="quote">${q}</div>`).join('')}
+          ${(cat.quotes || []).map(q => `<div class="quote">${q}</div>`).join('')}
         </div>
       </div>`
     ).join('');
