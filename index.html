@@ -925,7 +925,6 @@
   }
 
   .quote-stars {
-    color: #ef4444;
     font-size: 11px;
     letter-spacing: 0.5px;
   }
@@ -1905,7 +1904,8 @@
             const _dates = ['2 days ago', '1 week ago', '3 weeks ago', 'last month'];
             const _name = _names[Math.floor(Math.random() * _names.length)];
             const _date = _dates[Math.floor(Math.random() * _dates.length)];
-            const _stars = Math.random() < 0.5 ? '★☆☆☆☆' : '★★☆☆☆';
+            const _starCount = Math.random() < 0.5 ? 1 : 2;
+            const _stars = `<span style="color:#ef4444">${'★'.repeat(_starCount)}</span><span style="color:#d1d5db">${'☆'.repeat(5 - _starCount)}</span>`;
             return `<div class="quote"><span class="quote-reviewer">${_name}</span><div class="quote-meta"><span class="quote-stars">${_stars}</span><span class="quote-date">· ${_date}</span></div><div class="quote-text">${q}</div></div>`;
           }).join('')}
         </div>
