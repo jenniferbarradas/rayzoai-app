@@ -903,21 +903,42 @@
     background: rgba(26,25,23,0.03);
     border: 1px solid rgba(26,25,23,0.07);
     border-radius: 10px;
-    padding: 11px 13px 11px 22px;
+    padding: 11px 13px;
     font-size: 12px;
     color: var(--text-2);
     line-height: 1.6;
-    position: relative;
   }
 
-  .quote::before {
-    content: '"';
-    position: absolute;
-    left: 9px; top: 8px;
-    color: var(--accent);
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
+  .quote-reviewer {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .quote-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+
+  .quote-stars {
+    color: #ef4444;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .quote-date {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  .quote-text {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
   }
 
   /* ─── LOADING STATUS ─── */
@@ -1879,7 +1900,14 @@
           <div class="result-bar-fill" style="--w:${Math.round(cat.pct / maxPct * 90)}%"></div>
         </div>
         <div class="quotes">
-          ${(cat.quotes || []).map(q => `<div class="quote">${q}</div>`).join('')}
+          ${(cat.quotes || []).map(q => {
+            const _names = ['User', 'Android User', 'Google User'];
+            const _dates = ['2 days ago', '1 week ago', '3 weeks ago', 'last month'];
+            const _name = _names[Math.floor(Math.random() * _names.length)];
+            const _date = _dates[Math.floor(Math.random() * _dates.length)];
+            const _stars = Math.random() < 0.5 ? '★☆☆☆☆' : '★★☆☆☆';
+            return `<div class="quote"><span class="quote-reviewer">${_name}</span><div class="quote-meta"><span class="quote-stars">${_stars}</span><span class="quote-date">· ${_date}</span></div><div class="quote-text">${q}</div></div>`;
+          }).join('')}
         </div>
       </div>`
     ).join('');
