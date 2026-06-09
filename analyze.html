@@ -147,44 +147,14 @@
     z-index: 1;
   }
 
-  .analyze-heading {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  .analyze-heading h1 {
-    font-size: clamp(28px, 4vw, 40px);
-    font-weight: 800;
-    letter-spacing: -1.5px;
-    line-height: 1.15;
-    color: #FFFFFF;
-    margin-bottom: 12px;
-  }
-
-  .analyze-heading h1 em {
-    font-style: normal;
-    background: linear-gradient(135deg, var(--accent), #34d399);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .analyze-heading p {
-    font-size: 16px;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.6;
-  }
-
-  .container {
-    width: 100%;
-  }
+  .container { width: 100%; }
 
   /* ─── ANALYZE FORM ─── */
   .analyze-form {
     display: flex;
     gap: 10px;
     max-width: 560px;
-    margin: 0 auto 20px;
+    margin: 0 auto 10px;
     position: relative;
     z-index: 1;
   }
@@ -251,7 +221,7 @@
     align-items: center;
     gap: 8px;
     justify-content: center;
-    margin-top: 14px;
+    margin-top: 10px;
     font-size: 13px;
     color: rgba(255,255,255,0.45);
     position: relative;
@@ -277,8 +247,10 @@
     text-align: center;
     position: relative;
     z-index: 1;
-    margin-top: -12px;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .cta-fine {
@@ -291,6 +263,73 @@
   }
 
   .cta-fine span { color: var(--accent); }
+
+  /* ─── FILTER PILLS ─── */
+  .filter-pills-wrap {
+    max-width: 560px;
+    margin: 0 auto 16px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-pills-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1.5px solid rgba(180,180,180,0.55);
+    background: rgba(255,255,255,0.93);
+    color: rgba(30,30,30,0.65);
+    transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .filter-pill:hover:not(.active):not([disabled]) {
+    border-color: var(--accent);
+    color: #1D9E75;
+    background: #FFFFFF;
+  }
+
+  .filter-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(29,158,117,0.35);
+  }
+
+  .filter-pill[disabled] {
+    opacity: 0.42;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .soon-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    background: rgba(26,25,23,0.10);
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: rgba(26,25,23,0.45);
+    line-height: 1.6;
+  }
 
   /* ─── RESULTS ─── */
   #results-section {
@@ -429,15 +468,8 @@
     margin-bottom: 6px;
   }
 
-  .quote-stars {
-    font-size: 11px;
-    letter-spacing: 0.5px;
-  }
-
-  .quote-date {
-    font-size: 11px;
-    color: var(--text-3);
-  }
+  .quote-stars { font-size: 11px; letter-spacing: 0.5px; }
+  .quote-date  { font-size: 11px; color: var(--text-3); }
 
   .quote-text {
     font-size: 12px;
@@ -446,16 +478,11 @@
   }
 
   /* ─── ERROR STATE ─── */
-  .error-box {
-    padding: 40px 24px;
-    text-align: center;
-    color: var(--text-2);
-  }
-
-  .error-box-icon { font-size: 36px; margin-bottom: 16px; }
+  .error-box { padding: 40px 24px; text-align: center; color: var(--text-2); }
+  .error-box-icon  { font-size: 36px; margin-bottom: 16px; }
   .error-box-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
-  .error-box-desc { font-size: 14px; line-height: 1.6; }
-  .error-box-hint { font-size: 12px; color: var(--text-3); margin-top: 10px; }
+  .error-box-desc  { font-size: 14px; line-height: 1.6; }
+  .error-box-hint  { font-size: 12px; color: var(--text-3); margin-top: 10px; }
 
   /* ─── RESULT TABS ─── */
   .result-tabs {
@@ -560,9 +587,7 @@
     gap: 20px;
   }
 
-  .result-cats-grid .result-cat {
-    margin-bottom: 0;
-  }
+  .result-cats-grid .result-cat { margin-bottom: 0; }
 
   /* ─── DEMO TAGS ─── */
   .demo-tag {
@@ -574,102 +599,17 @@
     margin-left: 8px;
   }
 
-  .tag-critical { background: rgba(239,68,68,0.10); color: #dc2626; }
-  .tag-high     { background: rgba(234,88,12,0.10); color: #ea580c; }
+  .tag-critical { background: rgba(239,68,68,0.10);  color: #dc2626; }
+  .tag-high     { background: rgba(234,88,12,0.10);  color: #ea580c; }
   .tag-medium   { background: rgba(202,138,4,0.10);  color: #a16207; }
 
-  .revenue-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .revenue-row   { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .revenue-label { font-size: 12px; color: var(--text-3); white-space: nowrap; }
   .revenue-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
   .revenue-badge-high   { background: #fee2e2; color: #dc2626; }
   .revenue-badge-medium { background: #ffedd5; color: #ea580c; }
   .revenue-badge-low    { background: #f3f4f6; color: #6b7280; }
   .revenue-reason { font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-  /* ─── FILTER ROW ─── */
-  .filter-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 560px;
-    margin: 0 auto 14px;
-    position: relative;
-    z-index: 1;
-    gap: 10px;
-  }
-
-  .platform-filters {
-    display: flex;
-    gap: 6px;
-  }
-
-  .platform-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    border: 1.5px solid rgba(255,255,255,0.18);
-    background: transparent;
-    color: rgba(255,255,255,0.55);
-    transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .platform-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #FFFFFF;
-    font-weight: 600;
-    box-shadow: 0 2px 12px rgba(29,158,117,0.35);
-  }
-
-  .platform-btn[disabled] {
-    opacity: 0.42;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .soon-badge {
-    display: inline-block;
-    padding: 1px 6px;
-    background: rgba(255,255,255,0.14);
-    border-radius: 100px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    color: rgba(255,255,255,0.60);
-    line-height: 1.6;
-  }
-
-  .time-select {
-    padding: 7px 30px 7px 14px;
-    background: rgba(255,255,255,0.09);
-    border: 1.5px solid rgba(255,255,255,0.14);
-    border-radius: 100px;
-    color: rgba(255,255,255,0.78);
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba%28255%2C255%2C255%2C0.5%29' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    transition: border-color 0.2s;
-    white-space: nowrap;
-  }
-
-  .time-select:focus { border-color: rgba(29,158,117,0.65); }
-
-  .time-select option { background: #0D2B1F; color: #FFFFFF; }
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 768px) {
@@ -688,12 +628,6 @@
     .result-tab { padding: 6px 12px; font-size: 12px; }
     .priority-bar-label { width: 108px; font-size: 12px; }
     .priority-bar-pct { width: 30px; font-size: 12px; }
-  }
-
-  @media (max-width: 480px) {
-    .filter-row { flex-wrap: wrap; }
-    .time-select { flex: 1; }
-    .analyze-heading h1 { font-size: 26px; letter-spacing: -1px; }
   }
 
   /* ─── ACTION PLAN ─── */
@@ -729,11 +663,7 @@
     margin-bottom: 8px;
   }
 
-  .action-plan-cat-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-  }
+  .action-plan-cat-name { font-size: 14px; font-weight: 600; color: var(--text); }
 
   .action-plan-fix-label {
     font-size: 10px;
@@ -769,41 +699,9 @@
   <div class="main-grid"></div>
 
   <div class="analyze-container">
-    <div class="analyze-heading">
-      <h1>Analyze any app's<br><em>reviews instantly.</em></h1>
-      <p>Paste a Google Play URL or search by app name — get a ranked fix list in under 60 seconds.</p>
-    </div>
-
     <div class="container">
-      <div class="filter-row">
-        <div class="platform-filters">
-          <button class="platform-btn active" id="platform-gplay">
-            <svg width="12" height="13" viewBox="0 0 12 13" fill="none">
-              <path d="M1 1.5L7 6.5L1 11.5V1.5Z" fill="currentColor"/>
-              <path d="M1 1.5L9.5 4.5L7 6.5L1 1.5Z" fill="currentColor" opacity="0.75"/>
-              <path d="M1 11.5L7 6.5L9.5 8.5L1 11.5Z" fill="currentColor" opacity="0.75"/>
-              <path d="M9.5 4.5L11 5.5L10 7L9.5 8.5L7 6.5L9.5 4.5Z" fill="currentColor" opacity="0.55"/>
-            </svg>
-            Google Play
-          </button>
-          <button class="platform-btn" id="platform-appstore" disabled>
-            <svg width="12" height="13" viewBox="0 0 12 13" fill="none">
-              <path d="M6 1.5C6 1.5 4.5 2.8 4.5 3.8C4.5 4.5 5.1 5 6 5C6.9 5 7.5 4.5 7.5 3.8C7.5 2.8 6 1.5 6 1.5Z" fill="currentColor"/>
-              <path d="M2 11.5L3.8 7.5H8.2L10 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M3.8 7.5L6 4L8.2 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            App Store
-            <span class="soon-badge">Soon</span>
-          </button>
-        </div>
 
-        <select class="time-select" id="time-range">
-          <option value="2w">Last 2 weeks</option>
-          <option value="1m" selected>Last month</option>
-          <option value="3m">Last 3 months</option>
-        </select>
-      </div>
-
+      <!-- Search bar -->
       <div class="analyze-form">
         <input
           type="text"
@@ -819,11 +717,52 @@
           Analyze
         </button>
       </div>
+
       <p class="search-hint">Search by app name or paste a Google Play URL</p>
       <div id="analyze-status" class="analyze-status" style="display:none;">
         <div class="badge-dot" style="flex-shrink:0;width:6px;height:6px;"></div>
         <span id="analyze-status-text"></span>
       </div>
+
+      <!-- Filter pills -->
+      <div class="filter-pills-wrap">
+        <div class="filter-pills-row">
+          <button class="filter-pill active" data-group="platform" data-value="gplay" onclick="setPillActive(this)">
+            <svg width="12" height="13" viewBox="0 0 12 13" fill="none">
+              <path d="M1 1.5L7 6.5L1 11.5V1.5Z" fill="currentColor"/>
+              <path d="M1 1.5L9.5 4.5L7 6.5L1 1.5Z" fill="currentColor" opacity="0.75"/>
+              <path d="M1 11.5L7 6.5L9.5 8.5L1 11.5Z" fill="currentColor" opacity="0.75"/>
+              <path d="M9.5 4.5L11 5.5L10 7L9.5 8.5L7 6.5L9.5 4.5Z" fill="currentColor" opacity="0.55"/>
+            </svg>
+            Google Play
+          </button>
+          <button class="filter-pill" data-group="platform" data-value="appstore" disabled>
+            <svg width="12" height="13" viewBox="0 0 12 13" fill="none">
+              <path d="M6 1.5C6 1.5 4.5 2.8 4.5 3.8C4.5 4.5 5.1 5 6 5C6.9 5 7.5 4.5 7.5 3.8C7.5 2.8 6 1.5 6 1.5Z" fill="currentColor"/>
+              <path d="M2 11.5L3.8 7.5H8.2L10 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M3.8 7.5L6 4L8.2 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            App Store
+            <span class="soon-badge">Soon</span>
+          </button>
+        </div>
+        <div class="filter-pills-row">
+          <button class="filter-pill" data-group="time" data-value="2w" onclick="setPillActive(this)">Last 2 weeks</button>
+          <button class="filter-pill active" data-group="time" data-value="1m" onclick="setPillActive(this)">Last month</button>
+          <button class="filter-pill" data-group="time" data-value="3m" onclick="setPillActive(this)">Last 3 months</button>
+        </div>
+        <div class="filter-pills-row">
+          <button class="filter-pill" data-group="rating" data-value="1" onclick="setPillActive(this)">1★</button>
+          <button class="filter-pill active" data-group="rating" data-value="1-2" onclick="setPillActive(this)">1-2★</button>
+          <button class="filter-pill" data-group="rating" data-value="1-3" onclick="setPillActive(this)">1-3★</button>
+          <button class="filter-pill" data-group="rating" data-value="1-4" onclick="setPillActive(this)">1-4★</button>
+        </div>
+        <div class="filter-pills-row">
+          <button class="filter-pill" data-group="sort" data-value="recent" onclick="setPillActive(this)">Most recent</button>
+          <button class="filter-pill active" data-group="sort" data-value="relevant" onclick="setPillActive(this)">Most relevant</button>
+        </div>
+      </div>
+
       <p class="cta-fine">No credit card &nbsp;·&nbsp; No account needed &nbsp;·&nbsp; <span>Results in &lt; 60 seconds</span></p>
       <div id="results-section" style="display:none;"></div>
     </div>
@@ -860,9 +799,7 @@
     text.textContent = steps[0];
     let step = 1;
     _loadingTimer = setInterval(() => {
-      if (step < steps.length) {
-        text.textContent = steps[step++];
-      }
+      if (step < steps.length) text.textContent = steps[step++];
     }, 3500);
   }
 
@@ -874,11 +811,20 @@
   function extractPlayStoreId(raw) {
     try {
       const url = new URL(raw);
-      if (url.hostname === 'play.google.com') {
-        return url.searchParams.get('id') || null;
-      }
+      if (url.hostname === 'play.google.com') return url.searchParams.get('id') || null;
     } catch (_) {}
     return null;
+  }
+
+  function setPillActive(btn) {
+    const group = btn.dataset.group;
+    document.querySelectorAll(`.filter-pill[data-group="${group}"]`).forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function getActiveFilter(group) {
+    const active = document.querySelector(`.filter-pill.active[data-group="${group}"]`);
+    return active ? active.dataset.value : null;
   }
 
   async function analyzeApp() {
@@ -903,7 +849,9 @@
     results.style.display = 'none';
     startLoadingSteps(isUrl);
 
-    const timeRange = document.getElementById('time-range').value;
+    const timeRange    = getActiveFilter('time')   || '1m';
+    const ratingFilter = getActiveFilter('rating') || '1-2';
+    const sortFilter   = getActiveFilter('sort')   || 'relevant';
 
     let data = null;
     let isLive = false;
@@ -915,7 +863,10 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const payload = isUrl ? { appId, timeRange } : { appName, timeRange };
+      const payload = isUrl
+        ? { appId, timeRange, ratingFilter, sortFilter }
+        : { appName, timeRange, ratingFilter, sortFilter };
+
       const res = await fetch('https://rayzoai-app-production.up.railway.app/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1029,7 +980,7 @@
           <div class="results-head">
             <div>
               <div class="results-title">Analysis for &ldquo;${displayName}&rdquo;</div>
-              <div class="results-meta">No 1–2 star reviews found in recent results</div>
+              <div class="results-meta">No negative reviews found in recent results</div>
             </div>
             <span class="demo-tag" style="background:rgba(29,158,117,0.12);color:#1D9E75;border:1px solid rgba(29,158,117,0.25);flex-shrink:0;align-self:flex-start;">Live Data</span>
           </div>

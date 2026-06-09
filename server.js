@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname)));
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 app.post('/api/analyze', async (req, res) => {
-  const { appName, appId: directAppId, timeRange } = req.body;
+  const { appName, appId: directAppId, timeRange, ratingFilter, sortFilter } = req.body;
   if (!appName?.trim() && !directAppId?.trim()) {
     return res.status(400).json({ error: 'App name or app ID is required' });
   }
@@ -61,10 +61,13 @@ app.post('/api/analyze', async (req, res) => {
       console.log(`Found: ${appTitle} (${appId})`);
     }
 
-    // 2. Fetch recent reviews and filter to 1–2 stars
+    // 2. Fetch reviews with sort and rating filter applied
+    const sortOrder  = sortFilter === 'recent' ? gplay.sort.NEWEST : gplay.sort.RATING;
+    const maxRating  = ratingFilter === '1' ? 1 : ratingFilter === '1-3' ? 3 : ratingFilter === '1-4' ? 4 : 2;
+
     const reviewResult = await gplay.reviews({
       appId,
-      sort: gplay.sort.NEWEST,
+      sort: sortOrder,
       num: reviewCount,
       lang: 'en',
       country: 'us',
@@ -75,8 +78,8 @@ app.post('/api/analyze', async (req, res) => {
       ? reviewResult
       : (reviewResult.data || []);
 
-    const negativeReviews = allReviews.filter(r => r.score <= 2);
-    console.log(`Reviews fetched: ${allReviews.length}, Negative (1-2★): ${negativeReviews.length}`);
+    const negativeReviews = allReviews.filter(r => r.score <= maxRating);
+    console.log(`Reviews fetched: ${allReviews.length}, Negative (1-${maxRating}★): ${negativeReviews.length}`);
 
     if (negativeReviews.length === 0) {
       return res.json({
